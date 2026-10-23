@@ -1,15 +1,17 @@
--- 1. BASELINE INTERFACE INITIALIZATION
-local CoreGui = game:GetService("CoreGui")
+-- 1. BASELINE INTERACTION INITIALIZATION
+-- Using gethui() falls back to CoreGui safely if the executor requires it
+local TargetParent = (gethui and gethui()) or game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 -- Prevents interface duplicates during continuous debugging executions
-if CoreGui:FindFirstChild("MyCustomScriptHub") then
-    CoreGui.MyCustomScriptHub:Destroy()
+if TargetParent:FindFirstChild("MyCustomScriptHub") then
+    TargetParent.MyCustomScriptHub:Destroy()
 end
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "MyCustomScriptHub"
-ScreenGui.Parent = CoreGui
+ScreenGui.Parent = TargetParent
 
 -- 2. MAIN HUB VISUAL CONTAINER
 local MainFrame = Instance.new("Frame")
@@ -19,12 +21,40 @@ MainFrame.Position = UDim2.new(0.5, -175, 0.4, -125)
 MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
-MainFrame.Draggable = true -- Allows positioning adjustment across client layout
 MainFrame.Parent = ScreenGui
 
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 8)
 UICorner.Parent = MainFrame
+
+-- MODERN SMOOTH DRAG IMPLEMENTATION (Replaces MainFrame.Draggable)
+local dragging, dragInput, dragStart, startPos
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
 
 -- HUB CONTAINER TITLE BANNER
 local Title = Instance.new("TextLabel")
@@ -66,13 +96,13 @@ local function createScriptButton(name, positionY, callback)
 end
 
 -- 4. ATTACHING TARGET LOADSTRINGS AND SOURCE CODES TO BUTTONS
--- Option 1: Executes your custom tower auto-farm script directly
+-- REMINDER: Replace the placeholder links below with your absolute RAW GitHub links!
 createScriptButton("Execute Custom Tower Auto-Farm", 60, function()
     print("Launching Custom Tower Engine...")
+    -- Replace with actual link like: "https://githubusercontent.com"
     loadstring(game:HttpGet("https://githubusercontent.com"))()
 end)
 
--- Option 2: Executes a standard community backup script mirror
 createScriptButton("Launch Baza Hub Bypass", 110, function()
     print("Launching Baza Framework...")
     loadstring(game:HttpGet("https://githubusercontent.com"))()
@@ -82,4 +112,3 @@ end)
 createScriptButton("Close Script Hub UI", 180, function()
     ScreenGui:Destroy()
 end)
-
