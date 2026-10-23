@@ -1,1 +1,85 @@
+-- 1. BASELINE INTERFACE INITIALIZATION
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+
+-- Prevents interface duplicates during continuous debugging executions
+if CoreGui:FindFirstChild("MyCustomScriptHub") then
+    CoreGui.MyCustomScriptHub:Destroy()
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "MyCustomScriptHub"
+ScreenGui.Parent = CoreGui
+
+-- 2. MAIN HUB VISUAL CONTAINER
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 350, 0, 250)
+MainFrame.Position = UDim2.new(0.5, -175, 0.4, -125)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true -- Allows positioning adjustment across client layout
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 8)
+UICorner.Parent = MainFrame
+
+-- HUB CONTAINER TITLE BANNER
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+Title.Text = "S-HUB COMPILATION MULTI-PANEL"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.SourceSansBold
+Title.TextSize = 18
+Title.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 8)
+TitleCorner.Parent = Title
+
+-- 3. INTERACTIVE FUNCTIONAL DESIGN OPERATIONS
+local function createScriptButton(name, positionY, callback)
+    local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(0, 310, 0, 40)
+    Button.Position = UDim2.new(0, 20, 0, positionY)
+    Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    Button.Text = name
+    Button.TextColor3 = Color3.fromRGB(230, 230, 230)
+    Button.Font = Enum.Font.SourceSans
+    Button.TextSize = 16
+    Button.Parent = MainFrame
+    
+    local ButtonCorner = Instance.new("UICorner")
+    ButtonCorner.CornerRadius = UDim.new(0, 6)
+    ButtonCorner.Parent = Button
+    
+    -- Visual interaction handler
+    Button.MouseButton1Click:Connect(function()
+        Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        task.wait(0.1)
+        Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        callback()
+    end)
+end
+
+-- 4. ATTACHING TARGET LOADSTRINGS AND SOURCE CODES TO BUTTONS
+-- Option 1: Executes your custom tower auto-farm script directly
+createScriptButton("Execute Custom Tower Auto-Farm", 60, function()
+    print("Launching Custom Tower Engine...")
+    loadstring(game:HttpGet("https://githubusercontent.com"))()
+end)
+
+-- Option 2: Executes a standard community backup script mirror
+createScriptButton("Launch Baza Hub Bypass", 110, function()
+    print("Launching Baza Framework...")
+    loadstring(game:HttpGet("https://githubusercontent.com"))()
+end)
+
+-- Option 3: Safely closes down the visual interface layout elements
+createScriptButton("Close Script Hub UI", 180, function()
+    ScreenGui:Destroy()
+end)
 
